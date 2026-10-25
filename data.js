@@ -1,7 +1,9 @@
 /*
  * Leerinhoud — pas dit bestand aan om de woordjes van school (NKC-thema) te gebruiken.
  *
- *  letters[].say   = hoe de letter wordt uitgesproken (Nederlandse letternaam)
+ *  letters[].say   = letternaam (bee, cee, dee ... zoals de letter heet)
+ *  letters[].sound = klank (buh, kuh, duh ... zoals de letter klinkt in een woord)
+ *                    Dit is een spelling die een Nederlandse stem goed voorleest; pas aan naar smaak.
  *  letters[].word  = het woordje bij de letter (begint met die letter)
  *  letters[].emoji = het plaatje bij het woord
  *  numbers[].word  = het getal in woorden
@@ -34,31 +36,31 @@ window.LEER_DATA = {
   countEmoji: ["🍎", "🐥", "🎈", "⭐", "🚗", "🌸", "🐟", "🧁"],
 
   letters: [
-    { l: "a", say: "aa",   word: "appel",   emoji: "🍎" },
-    { l: "b", say: "bee",  word: "bal",     emoji: "⚽" },
-    { l: "c", say: "cee",  word: "cadeau",  emoji: "🎁" },
-    { l: "d", say: "dee",  word: "draak",   emoji: "🐉" },
-    { l: "e", say: "ee",   word: "eend",    emoji: "🦆" },
-    { l: "f", say: "ef",   word: "fiets",   emoji: "🚲" },
-    { l: "g", say: "gee",  word: "geit",    emoji: "🐐" },
-    { l: "h", say: "haa",  word: "huis",    emoji: "🏠" },
-    { l: "i", say: "ie",   word: "ijs",     emoji: "🍦" },
-    { l: "j", say: "jee",  word: "jas",     emoji: "🧥" },
-    { l: "k", say: "kaa",  word: "kat",     emoji: "🐱" },
-    { l: "l", say: "el",   word: "leeuw",   emoji: "🦁" },
-    { l: "m", say: "em",   word: "maan",    emoji: "🌙" },
-    { l: "n", say: "en",   word: "neus",    emoji: "👃" },
-    { l: "o", say: "oo",   word: "olifant", emoji: "🐘" },
-    { l: "p", say: "pee",  word: "pop",     emoji: "🪆" },
-    { l: "q", say: "kuu",  word: "quiz",    emoji: "❓" },
-    { l: "r", say: "er",   word: "roos",    emoji: "🌹" },
-    { l: "s", say: "es",   word: "sok",     emoji: "🧦" },
-    { l: "t", say: "tee",  word: "taart",   emoji: "🎂" },
-    { l: "u", say: "uu",   word: "uil",     emoji: "🦉" },
-    { l: "v", say: "vee",  word: "vis",     emoji: "🐟" },
-    { l: "w", say: "wee",  word: "wolk",    emoji: "☁️" },
-    { l: "x", say: "iks",  word: "xylofoon", emoji: "🎶" },
-    { l: "y", say: "ij",   word: "yoyo",    emoji: "🪀" },
-    { l: "z", say: "zet",  word: "zon",     emoji: "☀️" }
+    { l: "a", say: "aa", sound: "ah",   word: "appel",   emoji: "🍎" },
+    { l: "b", say: "bee", sound: "buh",  word: "bal",     emoji: "⚽" },
+    { l: "c", say: "cee", sound: "kuh",  word: "cadeau",  emoji: "🎁" },
+    { l: "d", say: "dee", sound: "duh",  word: "draak",   emoji: "🐉" },
+    { l: "e", say: "ee", sound: "eh",   word: "eend",    emoji: "🦆" },
+    { l: "f", say: "ef", sound: "fuh",   word: "fiets",   emoji: "🚲" },
+    { l: "g", say: "gee", sound: "guh",  word: "geit",    emoji: "🐐" },
+    { l: "h", say: "haa", sound: "huh",  word: "huis",    emoji: "🏠" },
+    { l: "i", say: "ie", sound: "ih",   word: "ijs",     emoji: "🍦" },
+    { l: "j", say: "jee", sound: "juh",  word: "jas",     emoji: "🧥" },
+    { l: "k", say: "kaa", sound: "kuh",  word: "kat",     emoji: "🐱" },
+    { l: "l", say: "el", sound: "luh",   word: "leeuw",   emoji: "🦁" },
+    { l: "m", say: "em", sound: "muh",   word: "maan",    emoji: "🌙" },
+    { l: "n", say: "en", sound: "nuh",   word: "neus",    emoji: "👃" },
+    { l: "o", say: "oo", sound: "ok",   word: "olifant", emoji: "🐘" },
+    { l: "p", say: "pee", sound: "puh",  word: "pop",     emoji: "🪆" },
+    { l: "q", say: "kuu", sound: "kwuh",  word: "quiz",    emoji: "❓" },
+    { l: "r", say: "er", sound: "ruh",   word: "roos",    emoji: "🌹" },
+    { l: "s", say: "es", sound: "suh",   word: "sok",     emoji: "🧦" },
+    { l: "t", say: "tee", sound: "tuh",  word: "taart",   emoji: "🎂" },
+    { l: "u", say: "uu", sound: "uh",   word: "uil",     emoji: "🦉" },
+    { l: "v", say: "vee", sound: "vuh",  word: "vis",     emoji: "🐟" },
+    { l: "w", say: "wee", sound: "wuh",  word: "wolk",    emoji: "☁️" },
+    { l: "x", say: "iks", sound: "ksuh",  word: "xylofoon", emoji: "🎶" },
+    { l: "y", say: "ij", sound: "ij",   word: "yoyo",    emoji: "🪀" },
+    { l: "z", say: "zet", sound: "zuh",  word: "zon",     emoji: "☀️" }
   ]
 };

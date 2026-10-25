@@ -17,14 +17,28 @@
   }
   function renderStars() { starsEl.textContent = "⭐ " + stars; }
 
+  /* ---------------- settings ---------------- */
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem("lmm." + k); return v === null ? d : v; } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem("lmm." + k, String(v)); } catch (e) {} }
+  };
+  // "sound" = klanken (b = buh), "name" = letternamen (b = bee)
+  let letterMode = store.get("mode", "sound");
+  let rate = parseFloat(store.get("rate", "0.8")) || 0.8;
+  let voiceURI = store.get("voice", "");
+
   /* ---------------- speech (nl-NL) ---------------- */
   const hasSpeech = "speechSynthesis" in window;
   let voice = null;
+  let dutchVoices = [];
   function pickVoice() {
     if (!hasSpeech) return;
     const vs = speechSynthesis.getVoices();
-    voice = vs.find((v) => v.lang === "nl-NL") ||
-            vs.find((v) => v.lang && v.lang.toLowerCase().startsWith("nl")) || null;
+    dutchVoices = vs.filter((v) => v.lang && v.lang.toLowerCase().replace("_", "-").startsWith("nl"));
+    voice = dutchVoices.find((v) => v.voiceURI === voiceURI) ||
+            dutchVoices.find((v) => v.lang.replace("_", "-") === "nl-NL") ||
+            dutchVoices[0] || null;
+    updateVoiceWarning();
   }
   if (hasSpeech) {
     pickVoice();
@@ -32,10 +46,10 @@
   }
   function makeUtter(text) {
     const u = new SpeechSynthesisUtterance(text);
-    u.lang = "nl-NL";
+    u.lang = voice ? voice.lang : "nl-NL";
     if (voice) u.voice = voice;
-    u.rate = 0.8;
-    u.pitch = 1.1;
+    u.rate = rate;
+    u.pitch = 1.05;
     return u;
   }
   function say(text) {
@@ -48,6 +62,53 @@
     speechSynthesis.cancel();
     texts.forEach((t) => speechSynthesis.speak(makeUtter(t)));
   }
+  // what to speak for a letter/number card
+  function spoken(it) {
+    return it.sound && letterMode === "sound" ? it.sound : it.say;
+  }
+
+  function updateVoiceWarning() {
+    let w = document.getElementById("vwarn");
+    const show = hasSpeech && !voice && document.getElementById("view");
+    if (!show) { if (w) w.remove(); return; }
+    if (!w) {
+      w = document.createElement("div");
+      w.id = "vwarn";
+      w.className = "vwarn";
+      w.textContent = "⚠️ Geen Nederlandse stem gevonden – het klinkt nu Engels. Tik op ⚙️.";
+      w.onclick = openSettings;
+      document.getElementById("app").insertBefore(w, document.getElementById("view"));
+    }
+  }
+
+  function openSettings() {
+    const o = document.createElement("div");
+    o.className = "overlay";
+    const voiceOpts = dutchVoices.length
+      ? dutchVoices.map((v) => '<option value="' + v.voiceURI + '"' + (voice && v.voiceURI === voice.voiceURI ? " selected" : "") + ">" + v.name + " (" + v.lang + ")</option>").join("")
+      : '<option value="">(geen Nederlandse stem gevonden)</option>';
+    o.innerHTML =
+      '<div class="tbox sbox">' +
+      "<h2>⚙️ Instellingen</h2>" +
+      '<label>Letters uitspreken als<select id="smode">' +
+      '<option value="sound"' + (letterMode === "sound" ? " selected" : "") + ">Klanken (b = buh)</option>" +
+      '<option value="name"' + (letterMode === "name" ? " selected" : "") + ">Letternamen (b = bee)</option>" +
+      "</select></label>" +
+      '<label>Stem<select id="svoice">' + voiceOpts + "</select></label>" +
+      '<label>Snelheid<input id="srate" type="range" min="0.5" max="1.1" step="0.05" value="' + rate + '"></label>' +
+      '<div class="tbtns"><button class="btn" id="stest">🔊 Test</button><button class="btn go" id="sdone">✅ Klaar</button></div>' +
+      '<p class="hint">Tip: op een telefoon of tablet is de beste Nederlandse stem te kiezen bij de spraakinstellingen van het apparaat (Android: Google Text-to-speech → Nederlands; iPhone/iPad: Toegankelijkheid → Gesproken content → Stemmen → Nederlands).</p>' +
+      "</div>";
+    document.body.appendChild(o);
+    const $ = (s) => o.querySelector(s);
+    const test = () => say(letterMode === "sound" ? "buh, buh, bal" : "bee, bal");
+    $("#smode").onchange = (e) => { letterMode = e.target.value; store.set("mode", letterMode); test(); };
+    $("#svoice").onchange = (e) => { voiceURI = e.target.value; store.set("voice", voiceURI); pickVoice(); test(); };
+    $("#srate").oninput = (e) => { rate = parseFloat(e.target.value); store.set("rate", rate); };
+    $("#stest").onclick = test;
+    $("#sdone").onclick = () => { o.remove(); };
+  }
+  document.getElementById("gear").onclick = openSettings;
 
   /* ---------------- content model ---------------- */
   const cap = (w) => w.charAt(0).toUpperCase() + w.slice(1);
@@ -63,14 +124,14 @@
       title: "Hoofdletters",
       items: D.letters.map((x) => ({
         glyph: x.l.toUpperCase(), pair: x.l.toUpperCase() + " " + x.l,
-        say: x.say, word: cap(x.word), emoji: x.emoji
+        say: x.say, sound: x.sound, word: cap(x.word), emoji: x.emoji
       }))
     },
     lower: {
       title: "Kleine letters",
       items: D.letters.map((x) => ({
         glyph: x.l, pair: x.l.toUpperCase() + " " + x.l,
-        say: x.say, word: x.word, emoji: x.emoji
+        say: x.say, sound: x.sound, word: x.word, emoji: x.emoji
       }))
     }
   };
@@ -172,11 +233,11 @@
 
     const speakCard = () => {
       if (kind === "num") say(it.say);
-      else sayQueue([it.say, it.word]);
+      else sayQueue([spoken(it), it.word]);
     };
 
     const $ = (s) => view.querySelector(s);
-    $("#glyph").onclick = () => say(it.say);
+    $("#glyph").onclick = () => say(spoken(it));
     $("#hear").onclick = speakCard;
     if (kind === "num") {
       $("#objs").onclick = () => countAloud(it.n);
@@ -316,7 +377,11 @@
       if (variant === "hear") {
         promptHtml = '<button class="listen" id="listen" aria-label="Luister">🔊</button>' +
           '<div class="q">Luister goed!</div>';
-        speak = "Waar is de " + target.say + "?";
+        speak = kind === "num"
+          ? "Waar is de " + target.say + "?"
+          : letterMode === "sound"
+            ? "Welke letter hoort bij de klank: " + spoken(target) + "?"
+            : "Waar is de " + target.say + "?";
       } else if (variant === "count") {
         promptHtml = '<div class="objs">' +
           countObjects(target.n).map((e) => "<span>" + e + "</span>").join("") + "</div>" +

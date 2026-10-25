@@ -1,6 +1,6 @@
 // Offline-first service worker (stale-while-revalidate).
 // Verhoog CACHE bij elke release zodat oude bestanden worden opgeruimd.
-const CACHE = "leer-met-mij-v1";
+const CACHE = "leer-met-mij-v2";
 const ASSETS = [
   "./",
   "index.html",
